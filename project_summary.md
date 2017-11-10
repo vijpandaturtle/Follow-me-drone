@@ -8,9 +8,10 @@ A Fully Convolutional Neural Net (FCN) is an improved version of the regular Con
 
 The architecture for the FCN is given below :
 
-![alt text][./images/download.png]
+[image_1] : ./images/download.png
+![alt text][image_1]
 
-Below I will explain the network I implemented in the project notebook using the Keras library (Tensorflow backend) and all of the techniques I used which makes all the difference in the results. These techniques include hyperparameter tuning, skip connections and convolution filters. Setting the weights and bias will not be discussed however, because all this is a already handled by keras which is a high level wrapper library.
+Below I will explain the network I implemented in the project notebook using the Keras library (Tensorflow backend) and all of the techniques I used which makes all the difference in the results. These techniques include hyperparameter tuning, skip connections and convolution filters. Setting the weights and bias will not be discussed however, because all this is already handled by keras which is a high level wrapper library.
 
 ## Model
 
@@ -44,3 +45,8 @@ Next, we move on to talk about skip connections. Skip connections, is an easy me
 ```
 
 Lastly, this is followed by two separable convolutional layers along with batch normalization.
+
+**Note**:  In the above encoder blocks, you may have noticed that the max-pooling layer is absent. This is because using max-pooling layer leads to loss of data, so the transpose convolutional network will have difficulty in reconstructing the image. Refer to the below links to learn more about good filter sizes and strides for the convolutional layers.
+1. [Guide To understanding CNNs](https://adeshpande3.github.io/adeshpande3.github.io/A-Beginner%27s-Guide-To-Understanding-Convolutional-Neural-Networks/)
+2. [Initializing filters](https://www.quora.com/What-is-are-the-method-s-for-initiating-choosing-filters-in-Convolutional-Neural-Networks)
+3. [PyImagesearch](https://www.pyimagesearch.com/2017/03/20/imagenet-vggnet-resnet-inception-xception-keras/)
