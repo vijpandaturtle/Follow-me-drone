@@ -51,3 +51,29 @@ Lastly, this is followed by two separable convolutional layers along with batch 
 1. [Guide To understanding CNNs](https://adeshpande3.github.io/adeshpande3.github.io/A-Beginner%27s-Guide-To-Understanding-Convolutional-Neural-Networks/)
 2. [Initializing filters](https://www.quora.com/What-is-are-the-method-s-for-initiating-choosing-filters-in-Convolutional-Neural-Networks)
 3. [PyImagesearch](https://www.pyimagesearch.com/2017/03/20/imagenet-vggnet-resnet-inception-xception-keras/)
+
+## Final Network
+
+Now, we know the structure of the encoder and decoder block. The next step is to combine these two into a single fully convolutional network. Below is my implementation network. It is relatively small and simple and i'll walk you through each step of the network.
+
+```python
+    fcn_model_1 = encoder_block(inputs, 32, strides=2)
+    fcn_model_2 = encoder_block(fcn_model_1, 64, strides=2)
+```
+Encoding the input image data using two encoding layers. The result of these two layers (our convolutional neural net ) is a deeper stack of feature maps.
+
+```python
+    fcn_model_3 = conv2d_batchnorm(fcn_model_2, 128, kernel_size=1, strides=1)
+```
+Follow this up with a regular convolutional layer plus batch_normalization layer.
+
+```python
+    fcn_model_4 = decoder_block(fcn_model_3,fcn_model_1, 64)
+    final_layer = decoder_block(fcn_model_4, inputs, 32)
+```
+Now for the transpose convolutional net, we use two deocder blocks. You must have noticed that i'm using the same number of encoder and decoder layers, as shown above. That is because the image needs to be in it's original dimensions at the end of the decoder layers.
+
+```python
+   out = layers.Conv2D(num_classes, 3, activation='softmax', padding='same')(final_layer)
+```
+Lastly use a simple convolutional layer with a softmax activation to give us the class probabilities of each segmented object in the scene.   
