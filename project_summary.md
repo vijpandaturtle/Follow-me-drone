@@ -8,8 +8,9 @@ A Fully Convolutional Neural Net (FCN) is an improved version of the regular Con
 
 The architecture for the FCN is given below :
 
-[image_1] : ./images/download.png
-![alt text][image_1]
+[image1] : ./images/download.png
+
+![alt text][image1]
 
 Below I will explain the network I implemented in the project notebook using the Keras library (Tensorflow backend) and all of the techniques I used which makes all the difference in the results. These techniques include hyperparameter tuning, skip connections and convolution filters. Setting the weights and bias will not be discussed however, because all this is already handled by keras which is a high level wrapper library.
 
