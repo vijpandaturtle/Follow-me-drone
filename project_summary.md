@@ -8,7 +8,7 @@ A Fully Convolutional Neural Net (FCN) is an improved version of the regular Con
 
 The architecture for the FCN is given below :
 
-[image1] : ./images/download.png
+[image1]: ./images/download.png
 
 ![alt text][image1]
 
