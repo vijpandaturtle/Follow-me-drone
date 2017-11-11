@@ -136,5 +136,5 @@ steps_per_epoch = 100,
 validation_steps = 100,
 workers = 2
 
-[image5]: ./images/4th.padding
+[image5]: ./images/4th.png
 ![Fourth Training Run][image5]
