@@ -77,3 +77,45 @@ Now for the transpose convolutional net, we use two deocder blocks. You must hav
    out = layers.Conv2D(num_classes, 3, activation='softmax', padding='same')(final_layer)
 ```
 Lastly use a simple convolutional layer with a softmax activation to give us the class probabilities of each segmented object in the scene.   
+
+## Training the Network
+
+Below I will discuss in detail my different experiments with hyperparameter tuning and their effects on the training and validation loss.
+Keep in mind that my actual number of training runs is much more than the number I will discuss, but the ones given below showed a significant improvement with smaller parameters.
+
+1. **Params :**
+
+learning_rate = 0.18
+batch_size = 128
+num_epochs = 20
+steps_per_epoch = 200
+validation_steps = 50
+workers = 2
+
+[image2]: ./images/1st.png
+![First Training Run][image2]
+
+The training and validation seemed to converge well after these setttings. But not without a few caveats. The training time was too long and both the losses seemed to converge too fast. So, in the next training runs, I played around with the number of epochs, learning rate and steps per epoch.
+
+2. **Params :**
+
+learning_rate = 0.12
+batch_size = 128
+num_epochs = 10
+steps_per_epoch = 200
+validation_steps = 50
+workers = 2
+
+[image3]: ./images/run3res.png
+![Second Training Run][image3]
+
+Not too good either. The validation loss was higher than the training loss. I really thought, I could do better so I decided to lower the learning rate further. Point to note, I got pretty much the same results with 10 epochs and learning_rate of 0.09 and 200 steps, the only difference being that the validation loss reached a plateau after some time.
+
+3. **Params :**
+
+learning_rate = 0.06
+batch_size = 128
+num_epochs = 10
+steps_per_epoch = 100
+validation_steps = 50
+workers = 2
