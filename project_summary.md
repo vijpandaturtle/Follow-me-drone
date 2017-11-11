@@ -14,6 +14,8 @@ The architecture for the FCN is given below :
 
 Below I will explain the network I implemented in the project notebook using the Keras library (Tensorflow backend) and all of the techniques I used which makes all the difference in the results. These techniques include hyperparameter tuning, skip connections and convolution filters. Setting the weights and bias will not be discussed however, because all this is already handled by keras which is a high level wrapper library.
 
+**Note:** 1x1 convolutions are basically convolutions with kernel_size (filter size) set to 1x1. This is an easy way to make the feature map stack deeper without having to compromise on the amount of data available in that layer.
+
 ## Model
 
 The model consists of two parts ; the encoder and the decoder. The encoder is your regular convolutional net having seperable convolutional layers. A seperable convolutional layer means we can split the kernel operation into multiple steps. A great resource that I used  to learn different types of convolutions is given [here.](https://towardsdatascience.com/types-of-convolutions-in-deep-learning-717013397f4d)
@@ -124,3 +126,15 @@ workers = 2
 ![Third Training Run][image4]
 
 Now this time tweaking the parameters drastically improved the performance of the network. It reached a new low of 0.09 !! Both the validation and training loss converged to the same point. There was only one thing that bothered me. The graph of the validation loss was quite uneven indicating a hint of unpredictability in the performance. It didn't take me long to realize that I hadn't done anything to improve the validation params at all. So, in the next few training runs, I stuck to modifying those params only.
+
+4. **Params :**
+
+learning_rate = 0.06,
+batch_size = 128,
+num_epochs = 10,
+steps_per_epoch = 100,
+validation_steps = 100,
+workers = 2
+
+[image5]: ./images/4th.padding
+![Fourth Training Run][image5]
