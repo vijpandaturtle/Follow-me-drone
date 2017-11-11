@@ -85,11 +85,11 @@ Keep in mind that my actual number of training runs is much more than the number
 
 1. **Params :**
 
-learning_rate = 0.18
-batch_size = 128
-num_epochs = 20
-steps_per_epoch = 200
-validation_steps = 50
+learning_rate = 0.18,
+batch_size = 128,
+num_epochs = 20,
+steps_per_epoch = 200,
+validation_steps = 50,
 workers = 2
 
 [image2]: ./images/1st.png
@@ -99,23 +99,28 @@ The training and validation seemed to converge well after these setttings. But n
 
 2. **Params :**
 
-learning_rate = 0.12
-batch_size = 128
-num_epochs = 10
-steps_per_epoch = 200
-validation_steps = 50
+learning_rate = 0.12,
+batch_size = 128,
+num_epochs = 10,
+steps_per_epoch = 200,
+validation_steps = 50,
 workers = 2
 
-[image3]: ./images/run3res.png
+[image3]: ./images/2nd.png
 ![Second Training Run][image3]
 
 Not too good either. The validation loss was higher than the training loss. I really thought, I could do better so I decided to lower the learning rate further. Point to note, I got pretty much the same results with 10 epochs and learning_rate of 0.09 and 200 steps, the only difference being that the validation loss reached a plateau after some time.
 
 3. **Params :**
 
-learning_rate = 0.06
-batch_size = 128
-num_epochs = 10
-steps_per_epoch = 100
-validation_steps = 50
+learning_rate = 0.06,
+batch_size = 128,
+num_epochs = 10,
+steps_per_epoch = 100,
+validation_steps = 50,
 workers = 2
+
+[image4]: ./images/3rd.png
+![Third Training Run][image4]
+
+Now this time tweaking the parameters drastically improved the performance of the network. It reached a new low of 0.09 !! Both the validation and training loss converged to the same point. There was only one thing that bothered me. The graph of the validation loss was quite uneven indicating a hint of unpredictability in the performance. It didn't take me long to realize that I hadn't done anything to improve the validation params at all. So, in the next few training runs, I stuck to modifying those params only.
