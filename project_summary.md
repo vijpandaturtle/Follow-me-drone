@@ -26,7 +26,7 @@ I have also included code snippets consisting of the encoder and decoder archite
 ``` python
     output_layer = separable_conv2d_batchnorm(input_layer, filters, strides)
 ```
-Consists of a single seperable convolutional layer, followed by batch normalization. Batch normalization is the process of shifting all the inputs to get a zero-mean and unit variance in small-sized    continuous chunks of data called batches. This helps us to take some liberties with weight initialization. To keep the network simple, I decided to use only one convolutional layer for the encoder.
+Consists of a single seperable convolutional layer, followed by batch normalization. Batch normalization is the process of shifting all the inputs to get a zero-mean and unit variance in small-sized    continuous chunks of data called batches. This helps us to take some liberties with weight initialization. To keep the network simple, I decided to use only one convolutional layer for the encoder. Encoder is your regular CNN, where it extracts features at each level thus giving your feature map. I have explained in detail about the functions of the layers in the upcoming sections.
 
 2. **Decoder Block**
 
@@ -40,7 +40,7 @@ The first layer of this network is the bilinear upsampling layer. Upsampling is 
 ```python
    concat_layers = layers.concatenate([bilinear_upsampled, large_ip_layer])
 ```
-Next, we move on to talk about skip connections. Skip connections, is an easy method to get two different i.e feature maps from two disconnected layers to interact and infer from the other. The layers participating should be the deeper small layer which contains a lot feature data and the shallow large layer which has the relatively less feature data. The easiest implementation of the concept explained above, is the concatenation operation. Tensorflow and hence Keras, has a built in function for this.
+Next, we move on to talk about skip connections. **Skip connections**, is an easy method to get two different i.e feature maps from two disconnected layers to interact and infer from the other. The layers participating should be the deeper small layer which contains a lot feature data and the shallow large layer which has the relatively less feature data. The easiest implementation of the concept explained above, is the concatenation operation. Tensorflow and hence Keras, has a built in function for this.
 
 ```python
     conv = separable_conv2d_batchnorm(concat_layers, filters)
@@ -78,12 +78,29 @@ Now for the transpose convolutional net, we use two deocder blocks. You must hav
 ```python
    out = layers.Conv2D(num_classes, 3, activation='softmax', padding='same')(final_layer)
 ```
-Lastly use a simple convolutional layer with a softmax activation to give us the class probabilities of each segmented object in the scene.
+Lastly use a simple convolutional layer with a softmax activation to give us the segmented objects in the scene.
 
 This is by no means the best network architecture. I made some optimizations along the way such as adding another encoder and decoder block to make the network a little deeper. My finally optimized architecture looked like this :
-![alt text][image]
+
+```python
+    fcn_model_1 = encoder_block(inputs, 32, strides=2)
+    fcn_model_2 = encoder_block(fcn_model_1, 64, strides=2)
+    fcn_model_2_new = encoder_block(fcn_model_2, 128, strides=2)
+    # TODO Add 1x1 Convolution layer using conv2d_batchnorm().
+    fcn_model_3 = conv2d_batchnorm(fcn_model_2_new, 512, kernel_size=1, strides=1)
+    # TODO: Add the same number of Decoder Blocks as the number of Encoder Block
+    fcn_model_3 = decoder_block(fcn_model_3, fcn_model_2, 128)
+    fcn_model_4 = decoder_block(fcn_model_3,fcn_model_1, 64)
+    final_layer = decoder_block(fcn_model_4, inputs, 32)
+    # The function returns the output layer of your model. "x" is the final layer obtained from the last decoder_block()
+    out = layers.Conv2D(num_classes, 1, activation='softmax', padding='same')(final_layer)
+```
 
 Remember, a deeper network isn't always a good option, especially if your data isn't very complex. If you unnecessarily increase layers without keeping your dataset in mind, it will increase the training time drastically which might do more harm than good, and may not give you a good result. So, make sure your network is best suited to your data.  
+
+**Note :** This segmentation network uses the intersection over union or IoU method for segmenting objects in the scene. The reason being, that it is more effective than bounding boxes, especially in a real-world environment. Here's an image illustrating the IoU method. Also click [here](https://www.pyimagesearch.com/2016/11/07/intersection-over-union-iou-for-object-detection/) for more info.
+[image6]: ./images/iou.png
+![alt text][image6]
 
 ## Training the Network
 
@@ -159,7 +176,7 @@ when you have a low learning rate, because this gives more model enough time to 
 
 After many trials of the above optimizations using educated guessed to guide me, these are the final set of params that gave me my end result.
 
-### Results 
+### Results
 
 ### Future Enhancements
 
