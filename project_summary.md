@@ -99,6 +99,7 @@ This is by no means the best network architecture. I made some optimizations alo
 Remember, a deeper network isn't always a good option, especially if your data isn't very complex. If you unnecessarily increase layers without keeping your dataset in mind, it will increase the training time drastically which might do more harm than good, and may not give you a good result. So, make sure your network is best suited to your data.  
 
 **Note :** This segmentation network uses the intersection over union or IoU method for segmenting objects in the scene. The reason being, that it is more effective than bounding boxes, especially in a real-world environment. Here's an image illustrating the IoU method. Also click [here](https://www.pyimagesearch.com/2016/11/07/intersection-over-union-iou-for-object-detection/) for more info.
+
 [image6]: ./images/iou.png
 ![alt text][image6]
 
