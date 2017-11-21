@@ -176,8 +176,26 @@ when you have a low learning rate, because this gives more model enough time to 
 
 After many trials of the above optimizations using educated guessed to guide me, these are the final set of params that gave me my end result.
 
+```python
+learning_rate = 0.01
+batch_size = 64
+num_epochs = 100
+steps_per_epoch = 200
+validation_steps = 50
+workers = 8
+```
+
 ### Results
+
+This was my final training and validation loss. This was the loss I obtained in the middle of my training runs with the above hyperparameters, so I decided to stop it and use it for inference. For convenience purposes I also switched to tensorboard for visualiztion.
+
+[final]: ./images/final.png
+![alt text][final]
+
+I used the sample training dataset for this project, which gave me satisfactory results. You can download this dataset by running the download.sh file in the data directory in your terminal. My final grade score was 0.44.
+
+A brief analysis of my final metrics, which can be found in jupyter notebook, I conclude that my model was able to segment the background very well indicated by a high score in all three types of evaluation data. The model is also able to detect the hero among a crowd, provided he is at a reasonable distance. The model however, dosen't do very well with recognizing the target from a distance.
 
 ### Future Enhancements
 
-This dataset performs decently well, on the data containing people. This should work in other classification problems, such as classifying a dog, cat etc. But it may need a couple optimizations, starting with increasing the number of layers and the number of filters. Also, one of the most important things, in training a deep learning model is a good dataset. For that I would use and recommend well known multi-class datasets such as the PASCAL VOC dataset and the IMAGENET dataset. Not only do these datasets have a large collection of data, they also don't need to be cleaned before use.
+This dataset performs decently well, on the data containing people. This should work in other classification problems, such as classifying a dog, cat etc. But it may need a couple optimizations, starting with increasing the number of layers and the number of filters. Also, one of the most important things, in training a deep learning model is a good dataset. For that I would use and recommend well known multi-class datasets such as the PASCAL VOC dataset and the IMAGENET dataset. Not only do these datasets have a large collection of data, they also don't need to be cleaned before use. As an afterthought, using such a simulator is a good idea to train the model to recognize images from a distance. As you can see in my final notebook the network isn't so good at recognizing the target from afar. That is something I intend to improve, by collecting additional data for it.
