@@ -14,7 +14,7 @@ The architecture for the FCN is given below :
 
 Below I will explain the network I implemented in the project notebook using the Keras library (Tensorflow backend) and all of the techniques I used which makes all the difference in the results. These techniques include hyperparameter tuning, skip connections and convolution filters. Setting the weights and bias will not be discussed however, because all this is already handled by keras which is a high level wrapper library.
 
-**Note:** 1x1 convolutions are basically convolutions with kernel_size (filter size) set to 1x1. This is an easy way to make the feature map stack deeper without having to compromise on the amount of data available in that layer.
+**Note:** 1x1 convolutions are basically convolutions with kernel_size (filter size) set to 1x1. This is an easy way to make the feature map stack deeper without having to compromise on the amount of data available in that layer. By using a 1x1 convolutional layer we can retain spatial data from the previous data. Click [here](http://iamaaditya.github.io/2016/03/one-by-one-convolution/) for more information on 1x1 convolutional layers.
 
 ## Model
 
@@ -47,7 +47,7 @@ Next, we move on to talk about skip connections. Skip connections, is an easy me
     conv_output_layer = separable_conv2d_batchnorm(conv, filters)
 ```
 
-Lastly, this is followed by two separable convolutional layers along with batch normalization.
+Lastly, this is followed by two separable convolutional layers along with batch normalization. These layers have their own significance in the semantic segmentation process or in simpler words in extracting data from an image. The beginning layers, extract low level features such as straight lines and simple shapes. The next layer/s record more complex features for examples curvature and more complex shapes. The level of complexity that each filter layer recognizes increases as we go deeper and then the final layers recognize objects as a whole. A convolutional net, if used for classification purposes usually uses fully connected layer with a softmax activation, to output class probabilities. In this case we don't need the class probabilities, but a segmented image, so we don't need fully connected layers.
 
 **Note**:  In the above encoder blocks, you may have noticed that the max-pooling layer is absent. This is because using max-pooling layer leads to loss of data, so the transpose convolutional network will have difficulty in reconstructing the image. Refer to the below links to learn more about good filter sizes and strides for the convolutional layers.
 1. [Guide To understanding CNNs](https://adeshpande3.github.io/adeshpande3.github.io/A-Beginner%27s-Guide-To-Understanding-Convolutional-Neural-Networks/)
@@ -78,14 +78,19 @@ Now for the transpose convolutional net, we use two deocder blocks. You must hav
 ```python
    out = layers.Conv2D(num_classes, 3, activation='softmax', padding='same')(final_layer)
 ```
-Lastly use a simple convolutional layer with a softmax activation to give us the class probabilities of each segmented object in the scene.   
+Lastly use a simple convolutional layer with a softmax activation to give us the class probabilities of each segmented object in the scene.
+
+This is by no means the best network architecture. I made some optimizations along the way such as adding another encoder and decoder block to make the network a little deeper. My finally optimized architecture looked like this :
+![alt text][image]
+
+Remember, a deeper network isn't always a good option, especially if your data isn't very complex. If you unnecessarily increase layers without keeping your dataset in mind, it will increase the training time drastically which might do more harm than good, and may not give you a good result. So, make sure your network is best suited to your data.  
 
 ## Training the Network
 
 Below I will discuss in detail my different experiments with hyperparameter tuning and their effects on the training and validation loss.
 Keep in mind that my actual number of training runs is much more than the number I will discuss, but the ones given below showed a significant improvement with smaller parameters.
 
-1. **Params :**
+**Params :**
 
 learning_rate = 0.18,
 batch_size = 128,
@@ -97,9 +102,9 @@ workers = 2
 [image2]: ./images/1st.png
 ![First Training Run][image2]
 
-The training and validation seemed to converge well after these setttings. But not without a few caveats. The training time was too long and both the losses seemed to converge too fast. So, in the next training runs, I played around with the number of epochs, learning rate and steps per epoch.
+The training and validation seemed to converge well after these settings. But not without a few caveats. The training time was too long and both the losses seemed to converge too fast. So, in the next training runs, I played around with the number of epochs, learning rate and steps per epoch.
 
-2. **Params :**
+**Params :**
 
 learning_rate = 0.12,
 batch_size = 128,
@@ -113,7 +118,7 @@ workers = 2
 
 Not too good either. The validation loss was higher than the training loss. I really thought, I could do better so I decided to lower the learning rate further. Point to note, I got pretty much the same results with 10 epochs and learning_rate of 0.09 and 200 steps, the only difference being that the validation loss reached a plateau after some time.
 
-3. **Params :**
+**Params :**
 
 learning_rate = 0.06,
 batch_size = 128,
@@ -127,7 +132,7 @@ workers = 2
 
 Now this time tweaking the parameters drastically improved the performance of the network. It reached a new low of 0.09 !! Both the validation and training loss converged to the same point. There was only one thing that bothered me. The graph of the validation loss was quite uneven indicating a hint of unpredictability in the performance. It didn't take me long to realize that I hadn't done anything to improve the validation params at all. So, in the next few training runs, I stuck to modifying those params only.
 
-4. **Params :**
+**Params :**
 
 learning_rate = 0.06,
 batch_size = 128,
@@ -138,3 +143,24 @@ workers = 2
 
 [image5]: ./images/4th.png
 ![Fourth Training Run][image5]
+
+The above training runs were the worst case runs in my training process, but I'm using this as an example to illustrate some optimization techniques, that will ultimately to your required result.
+1. First, choose your learning rate wisely. If your learning rate is way too high, your loss will converge fast and plateau. This is a classic example of your model finding and settling for a local minima instead of a global minima.
+Your ideal learning rate choices should be somewhere between **0.001-0.01**.You can go higher if you want, that entirely depends on the robustness of your dataset and architecture.
+
+2. Along with learning rate, the number of epochs is also an important hyperparameter to optimize. This is especially necessary
+when you have a low learning rate, because this gives more model enough time to converge. Following is the general trend to choose number of epochs.
+( **Low learning_rate; Larger no of epochs** ::
+**High learning_rate; Smaller no of epochs** )
+
+3. Steps to training and validation indicates the number of images that would be used by the model at a time. It's good to choose reasonable number of images, as choosing a large number might increase training time significantly.
+
+4. Finally, batch size. This is sometimes a tricky parameter to choose since it also significantly affects the overall performance of the model. The norm is to choose batch size as 32, 64, 128, 256 and so on. But this number is generally limited by the RAM on your local machine or compute instance. You can start from a small batch size and increase it, if you feel the need to do so.
+
+After many trials of the above optimizations using educated guessed to guide me, these are the final set of params that gave me my end result.
+
+### Results 
+
+### Future Enhancements
+
+This dataset performs decently well, on the data containing people. This should work in other classification problems, such as classifying a dog, cat etc. But it may need a couple optimizations, starting with increasing the number of layers and the number of filters. Also, one of the most important things, in training a deep learning model is a good dataset. For that I would use and recommend well known multi-class datasets such as the PASCAL VOC dataset and the IMAGENET dataset. Not only do these datasets have a large collection of data, they also don't need to be cleaned before use.
